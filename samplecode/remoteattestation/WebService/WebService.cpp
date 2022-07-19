@@ -45,11 +45,11 @@ void WebService::init() {
     if (curl) {
         Log("Curl initialized successfully");
 //		curl_easy_setopt( curl, CURLOPT_VERBOSE, 1L );
-        curl_easy_setopt( curl, CURLOPT_SSLCERTTYPE, "PEM");
-        curl_easy_setopt( curl, CURLOPT_SSLCERT, Settings::ias_crt);
-        curl_easy_setopt( curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
-        curl_easy_setopt( curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
-        curl_easy_setopt( curl, CURLOPT_NOPROGRESS, 1L);
+        // curl_easy_setopt( curl, CURLOPT_SSLCERTTYPE, "PEM");
+        // curl_easy_setopt( curl, CURLOPT_SSLCERT, Settings::ias_crt);
+        // curl_easy_setopt( curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
+        // curl_easy_setopt( curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+        // curl_easy_setopt( curl, CURLOPT_NOPROGRESS, 1L);
     } else
         Log("Curl init error", log::error);
 }
@@ -162,14 +162,16 @@ bool WebService::sendToIAS(string url,
     curl_easy_setopt( curl, CURLOPT_URL, url.c_str());
     Log("sending url: %s", url.c_str());
 
-    if (headers) {
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    headers = curl_slist_append(headers, "Ocp-Apim-Subscription-Key: 798452f6491f402eab6a72cc783c1bb5");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    if (!payload.empty()) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
     }
 
     ias_response_container->p_response = (char*) malloc(1);
     ias_response_container->size = 0;
 
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); 
     curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, ias_response_header_parser);
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, response_header);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ias_reponse_body_handler);
@@ -202,6 +204,9 @@ bool WebService::getSigRL(string gid, string *sigrl) {
 
     string url = Settings::ias_url + "sigrl/" + gid;
 
+    //struct curl_slist *headers = NULL;
+    //headers = curl_slist_append(headers, "Ocp-Apim-Subscription-Key: 798452f6491f402eab6a72cc783c1bb5");
+
     this->sendToIAS(url, IAS::sigrl, "", NULL, &ias_response_container, &response_header);
 
     Log("\tResponse status is: %d" , response_header.response_status);
@@ -228,7 +233,7 @@ bool WebService::verifyQuote(uint8_t *quote, uint8_t *pseManifest, uint8_t *nonc
 
     struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, "Content-Type: application/json");
-
+    
     string payload = encoded_quote;
 
     string url = Settings::ias_url + "report";
