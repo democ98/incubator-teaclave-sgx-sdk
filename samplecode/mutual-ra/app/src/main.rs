@@ -209,7 +209,7 @@ fn main() {
         }
         Mode::Client => {
             println!("Running as client...");
-            let socket = TcpStream::connect("localhost:3443").unwrap();
+            let socket = TcpStream::connect("149.28.155.113:3443").unwrap();
             let mut retval = sgx_status_t::SGX_SUCCESS;
             let result = unsafe {
                 run_client(enclave.geteid(), &mut retval, socket.as_raw_fd(), sign_type)
