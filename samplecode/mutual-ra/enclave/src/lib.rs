@@ -439,7 +439,7 @@ pub fn create_attestation_report(pub_k: &sgx_ec256_public_t, sign_type: sgx_quot
         println!("qe_report does not match current target_info!");
         return Err(sgx_status_t::SGX_ERROR_UNEXPECTED);
     }
-
+    println!("sgx quote mr_enclave = {:02x}", ti.mr_enclave.m.iter().format(""));
     println!("qe_report check passed");
 
     // Debug
