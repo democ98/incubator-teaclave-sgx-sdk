@@ -134,7 +134,7 @@ fn init_enclave() -> SgxResult<SgxEnclave> {
     let mut launch_token_updated: i32 = 0;
     // call sgx_create_enclave to initialize an enclave instance
     // Debug Support: set 2nd parameter to 1
-    let debug = 0;
+    let debug = 1;
     let mut misc_attr = sgx_misc_attribute_t {secs_attr: sgx_attributes_t { flags:0, xfrm:0}, misc_select:0};
     SgxEnclave::create(ENCLAVE_FILE,
                        debug,
