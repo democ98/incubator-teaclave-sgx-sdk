@@ -530,7 +530,7 @@ pub extern "C" fn run_server(socket_fd : c_int, sign_type: sgx_quote_sign_type_t
     rc_store.add_pem_file(&mut ca_reader).unwrap();
     // Build a default authenticator which allow every authenticated client
 
-    let authenticator = rustls::AllowAnyAuthenticatedClient::new(rc_store);
+    let authenticator = rustls::AllowAnyAnonymousOrAuthenticatedClient::new(rc_store);
     let mut cfg = rustls::ServerConfig::new(authenticator);
     let mut certs = Vec::new();
     certs.push(rustls::Certificate(cert_der));
